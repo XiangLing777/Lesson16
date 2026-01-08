@@ -30,7 +30,8 @@ app.listen(port, () => {
 app.get('/allpokemon', async (req, res) => {
     try {
         let connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute('SELECT * FROM defaultdb.pokemon');
+        const [rows] = await connection.execute('SELECT * FROM pokemon');
+        await connection.end();
         res.json(rows);
     } catch (err) {
         console.error(err);
@@ -38,13 +39,12 @@ app.get('/allpokemon', async (req, res) => {
     }
 });
 
-
-// Example Route: Create a new card
 app.post('/addpokemon', async (req, res) => {
     const { pokemon_name, pokemon_pic } = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
-        await connection.execute('INSERT INTO pokemon (card_name, card_pic) VALUES (?, ?)', [pokemon_name, pokemon_pic]);
+        await connection.execute('INSERT INTO pokemon (pokemon_name, pokemon_pic) VALUES (?, ?)', [pokemon_name, pokemon_pic]);
+        await connection.end();
         res.status(201).json({ message: 'Pokemon ' + pokemon_name + ' added successfully' });
     } catch (err) {
         console.error(err);
