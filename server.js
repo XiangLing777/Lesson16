@@ -52,7 +52,7 @@ app.post('/addpokemon', async (req, res) => {
     }
 });
 
-app.put('/updatepokemon', async (req, res) => {
+app.post('/updatepokemon', async (req, res) => {
     const { id, pokemon_name, pokemon_pic } = req.body;
 
     if (!id) {
@@ -78,6 +78,28 @@ app.put('/updatepokemon', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error - could not update pokemon' });
+    }
+});
+
+app.get('/deletepokemon/:id', async (req, res) => {
+    const pokemonId = req.params.id;
+
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+        const [result] = await connection.execute('DELETE FROM pokemon WHERE id = ?', [pokemonId]);
+        await connection.end();
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Pokemon not found' });
+        }
+
+        res.json({
+            message: 'Pokemon deleted successfully',
+            deleted_id: pokemonId
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not delete pokemon' });
     }
 });
 
