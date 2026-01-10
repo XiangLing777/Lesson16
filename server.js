@@ -52,27 +52,55 @@ app.post('/addpokemon', async (req, res) => {
     }
 });
 
-app.put('/updatepokemon/:id', async (req, res) => {
-    const { pokemon_name, pokemon_pic } = req.body;
-    const pokemonId = req.params.id;
+app.put('/updatepokemon', async (req, res) => {
+    const { id, pokemon_name, pokemon_pic } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ message: 'id is required in request body' });
+    }
+
     try {
         let connection = await mysql.createConnection(dbConfig);
-        await connection.execute('UPDATE pokemon SET pokemon_name = ?, pokemon_pic = ? WHERE id = ?', [pokemon_name, pokemon_pic, pokemonId]);
+        const [result] = await connection.execute(
+            'UPDATE pokemon SET pokemon_name = ?, pokemon_pic = ? WHERE id = ?',
+            [pokemon_name, pokemon_pic, id]
+        );
         await connection.end();
-        res.json({ message: 'Pokemon updated successfully' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Pokemon not found' });
+        }
+
+        res.json({
+            message: 'Pokemon updated successfully',
+            id: id
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error - could not update pokemon' });
     }
 });
 
-app.delete('/deletepokemon/:id', async (req, res) => {
-    const pokemonId = req.params.id;
+app.post('/deletepokemon', async (req, res) => {
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ message: 'id is required in request body' });
+    }
+
     try {
         let connection = await mysql.createConnection(dbConfig);
-        await connection.execute('DELETE FROM pokemon WHERE id = ?', [pokemonId]);
+        const [result] = await connection.execute('DELETE FROM pokemon WHERE id = ?', [id]);
         await connection.end();
-        res.json({ message: 'Pokemon deleted successfully' });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Pokemon not found' });
+        }
+
+        res.json({
+            message: 'Pokemon deleted successfully',
+            deleted_id: id
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error - could not delete pokemon' });
