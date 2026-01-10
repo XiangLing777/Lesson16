@@ -53,17 +53,17 @@ app.post('/addpokemon', async (req, res) => {
 });
 
 app.post('/updatepokemon', async (req, res) => {
-    const { id, pokemon_name, pokemon_pic } = req.body;
+    const { pokemon_id, pokemon_name, pokemon_pic } = req.body;
 
-    if (!id) {
-        return res.status(400).json({ message: 'id is required in request body' });
+    if (!pokemon_id) {
+        return res.status(400).json({ message: 'pokemon_id is required in request body' });
     }
 
     try {
         let connection = await mysql.createConnection(dbConfig);
         const [result] = await connection.execute(
-            'UPDATE pokemon SET pokemon_name = ?, pokemon_pic = ? WHERE id = ?',
-            [pokemon_name, pokemon_pic, id]
+            'UPDATE pokemon SET pokemon_name = ?, pokemon_pic = ? WHERE pokemon_id = ?',  // 改为 pokemon_id
+            [pokemon_name, pokemon_pic, pokemon_id]  // 变量名也相应改变
         );
         await connection.end();
 
@@ -73,7 +73,7 @@ app.post('/updatepokemon', async (req, res) => {
 
         res.json({
             message: 'Pokemon updated successfully',
-            id: id
+            pokemon_id: pokemon_id
         });
     } catch (err) {
         console.error(err);
@@ -86,7 +86,7 @@ app.get('/deletepokemon/:id', async (req, res) => {
 
     try {
         let connection = await mysql.createConnection(dbConfig);
-        const [result] = await connection.execute('DELETE FROM pokemon WHERE id = ?', [pokemonId]);
+        const [result] = await connection.execute('DELETE FROM pokemon WHERE pokemon_id = ?', [pokemonId]);  // 改为 pokemon_id
         await connection.end();
 
         if (result.affectedRows === 0) {
@@ -104,15 +104,15 @@ app.get('/deletepokemon/:id', async (req, res) => {
 });
 
 app.post('/deletepokemon', async (req, res) => {
-    const { id } = req.body;
+    const { pokemon_id } = req.body;  // 改为 pokemon_id
 
-    if (!id) {
-        return res.status(400).json({ message: 'id is required in request body' });
+    if (!pokemon_id) {
+        return res.status(400).json({ message: 'pokemon_id is required in request body' });
     }
 
     try {
         let connection = await mysql.createConnection(dbConfig);
-        const [result] = await connection.execute('DELETE FROM pokemon WHERE id = ?', [id]);
+        const [result] = await connection.execute('DELETE FROM pokemon WHERE pokemon_id = ?', [pokemon_id]);  // 改为 pokemon_id
         await connection.end();
 
         if (result.affectedRows === 0) {
@@ -121,7 +121,7 @@ app.post('/deletepokemon', async (req, res) => {
 
         res.json({
             message: 'Pokemon deleted successfully',
-            deleted_id: id
+            deleted_id: pokemon_id
         });
     } catch (err) {
         console.error(err);
