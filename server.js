@@ -62,8 +62,8 @@ app.post('/updatepokemon', async (req, res) => {
     try {
         let connection = await mysql.createConnection(dbConfig);
         const [result] = await connection.execute(
-            'UPDATE pokemon SET pokemon_name = ?, pokemon_pic = ? WHERE pokemon_id = ?',  // 改为 pokemon_id
-            [pokemon_name, pokemon_pic, pokemon_id]  // 变量名也相应改变
+            'UPDATE pokemon SET pokemon_name = ?, pokemon_pic = ? WHERE pokemon_id = ?',
+            [pokemon_name, pokemon_pic, pokemon_id]
         );
         await connection.end();
 
@@ -86,7 +86,7 @@ app.get('/deletepokemon/:id', async (req, res) => {
 
     try {
         let connection = await mysql.createConnection(dbConfig);
-        const [result] = await connection.execute('DELETE FROM pokemon WHERE pokemon_id = ?', [pokemonId]);  // 改为 pokemon_id
+        const [result] = await connection.execute('DELETE FROM pokemon WHERE pokemon_id = ?', [pokemonId]);
         await connection.end();
 
         if (result.affectedRows === 0) {
@@ -112,7 +112,7 @@ app.post('/deletepokemon', async (req, res) => {
 
     try {
         let connection = await mysql.createConnection(dbConfig);
-        const [result] = await connection.execute('DELETE FROM pokemon WHERE pokemon_id = ?', [pokemon_id]);  // 改为 pokemon_id
+        const [result] = await connection.execute('DELETE FROM pokemon WHERE pokemon_id = ?', [pokemon_id]);
         await connection.end();
 
         if (result.affectedRows === 0) {
